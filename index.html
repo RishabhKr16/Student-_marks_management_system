@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        h1{
+            color: red;
+        }
+        .action-button {
+        margin-right: 100px; /* Adjust the value as needed for the desired spacing */
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Student Record System</h1>
+    </header>
+    <div id="container">
+        <form id="studentForm">
+            <label for="numStudents">Enter the number of students:</label>
+            <input type="number" id="numStudents" name="numStudents" required>
+
+            <div id="inputFields"></div>
+
+            <br><br>
+
+            <button class="action-button" type="button" onclick="createInputFields()">Create Fields</button>
+            <button class="action-button" type="button" onclick="submitForm()">Submit</button>
+
+            <br><br>
+            <br><br>
+
+            <label for="searchRoll">Enter Roll Number to Search:</label>
+            <input type="number" id="searchRoll" name="searchRoll">
+            <button type="button" onclick="searchStudent()">Search</button>
+        </form>
+
+        <div id="result"></div>
+
+        <script>
+            let studentData = [];
+
+            function createInputFields() {
+                const numStudents = document.getElementById('numStudents').value;
+                const inputFieldsDiv = document.getElementById('inputFields');
+                inputFieldsDiv.innerHTML = '';
+
+                for (let i = 1; i <= numStudents; i++) {
+                    inputFieldsDiv.innerHTML += `
+                        <h3>Student ${i}</h3>
+                        <label for="rollNumber${i}">Roll Number:</label>
+                        <input type="number" id="rollNumber${i}" name="rollNumber${i}" required>
+
+                        <label for="name${i}">Name:</label>
+                        <input type="text" id="name${i}" name="name${i}" required>
+
+                        <label for="phyMarks${i}">Physics Marks:</label>
+                        <input type="number" id="phyMarks${i}" name="phyMarks${i}" required>
+
+                        <label for="chemMarks${i}">Chemistry Marks:</label>
+                        <input type="number" id="chemMarks${i}" name="chemMarks${i}" required>
+
+                        <label for="mathMarks${i}">Mathematics Marks:</label>
+                        <input type="number" id="mathMarks${i}" name="mathMarks${i}" required>
+
+                        <label for="csMarks${i}">Computer Science Marks:</label>
+                        <input type="number" id="csMarks${i}" name="csMarks${i}" required>
+
+                        <label for="bioMarks${i}">Biology Marks:</label>
+                        <input type="number" id="bioMarks${i}" name="bioMarks${i}" required>
+
+                        <label for="engMarks${i}">English Marks:</label>
+                        <input type="number" id="engMarks${i}" name="engMarks${i}" required>
+
+                        <br><br>
+                    `;
+                }
+            }
+
+            function submitForm() {
+                const numStudents = document.getElementById('numStudents').value;
+                studentData = [];
+
+                for (let i = 1; i <= numStudents; i++) {
+                    const rollNumber = document.getElementById(`rollNumber${i}`).value;
+                    const name = document.getElementById(`name${i}`).value;
+                    const phyMarks = document.getElementById(`phyMarks${i}`).value;
+                    const chemMarks = document.getElementById(`chemMarks${i}`).value;
+                    const mathMarks = document.getElementById(`mathMarks${i}`).value;
+                    const csMarks = document.getElementById(`csMarks${i}`).value;
+                    const bioMarks = document.getElementById(`bioMarks${i}`).value;
+                    const engMarks = document.getElementById(`engMarks${i}`).value;
+
+                    studentData.push({
+                        rollNumber: parseInt(rollNumber),
+                        name,
+                        phyMarks: parseInt(phyMarks),
+                        chemMarks: parseInt(chemMarks),
+                        mathMarks: parseInt(mathMarks),
+                        csMarks: parseInt(csMarks),
+                        bioMarks: parseInt(bioMarks),
+                        engMarks: parseInt(engMarks),
+                    });
+                }
+            }
+
+            function searchStudent() {
+                const searchRoll = document.getElementById('searchRoll').value;
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+                const foundStudent = studentData.find(student => student.rollNumber === parseInt(searchRoll));
+
+                if (foundStudent) {
+                    // Calculate total marks, CGPA, and percentage
+                    const credits = {
+                        math: 5,
+                        physics: 4,
+                        chemistry: 4,
+                        cs: 4,
+                        biology: 3,
+                        english: 2
+                    };
+
+                    const totalCredits = credits.math + credits.physics + credits.chemistry + credits.cs + credits.biology + credits.english;
+
+                    const weightedSum = (
+                        foundStudent.mathMarks * credits.math +
+                        foundStudent.phyMarks * credits.physics +
+                        foundStudent.chemMarks * credits.chemistry +
+                        foundStudent.csMarks * credits.cs +
+                        foundStudent.bioMarks * credits.biology +
+                        foundStudent.engMarks * credits.english
+                    );
+
+                    const cgpa = (weightedSum / totalCredits) / 10; // Convert to a scale between 0 and 10
+
+                    const percentage = (foundStudent.phyMarks + foundStudent.chemMarks + foundStudent.mathMarks + foundStudent.csMarks + foundStudent.bioMarks + foundStudent.engMarks) / 600 * 100;
+
+                    let grade, division;
+
+                    if (percentage >= 90) {
+                        grade = 'A';
+                        division = '1st';
+                    } else if (percentage >= 80) {
+                        grade = 'B';
+                        division = '2nd';
+                    } else if (percentage >= 70) {
+                        grade = 'C';
+                        division = '3rd';
+                    } else if (percentage >= 60) {
+                        grade = 'D';
+                        division = '4th';
+                    } else if (percentage >= 50) {
+                        grade = 'E';
+                        division = '5th';
+                    } else {
+                        grade = 'F';
+                        division = 'Does not qualify for any division';
+                    }
+
+                    resultDiv.innerHTML += `
+                        <h3>Student Found!</h3>
+                        <p>Roll Number: ${foundStudent.rollNumber}</p>
+                        <p>Name: ${foundStudent.name}</p>
+                        <p>Physics Marks: ${foundStudent.phyMarks}</p>
+                        <p>Chemistry Marks: ${foundStudent.chemMarks}</p>
+                        <p>Mathematics Marks: ${foundStudent.mathMarks}</p>
+                        <p>Computer Science Marks: ${foundStudent.csMarks}</p>
+                        <p>Biology Marks: ${foundStudent.bioMarks}</p>
+                        <p>English Marks: ${foundStudent.engMarks}</p>
+                        <p>Total Marks: ${foundStudent.phyMarks + foundStudent.chemMarks + foundStudent.mathMarks + foundStudent.csMarks + foundStudent.bioMarks + foundStudent.engMarks}</p>
+                        <p>Percentage: ${percentage.toFixed(2)}%</p>
+                        <p>Grade: ${grade}</p>
+                        <p>Division: ${division}</p>
+                        <p>CGPA: ${cgpa.toFixed(2)}</p>
+                        <br><br>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p>Student not found with the specified Roll Number.</p>';
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
